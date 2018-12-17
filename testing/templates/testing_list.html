@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7/css/bootstrap.min.css' %}">
+	<script src="{% static 'jquery1.12.4.min.js' %}"></script>
+	<script src="{% static 'bootstrap-3.3.7/js/bootstrap.min.js' %}"></script>
+       <style type="text/css">
+        *{
+           padding: 0;
+             margin: 0;
+         }
+         .text-hide{
+             width: 300px;
+             font-size: 16px;
+             color: #666;
+             border: 1px solid #ccc;
+             line-height: 24px;
+         }
+         .check-more{
+             margin-left: 5px;
+             font-size: 14px;
+             color: red;
+             cursor: pointer;
+         }
+         .click-show{
+             width: 300px;
+             border: 1px solid #ccc;
+             font-size: 16px;
+             color: #666;
+             line-height: 24px;
+         }
+         #top{
+            background-color: #96b97d;
+        }
+         #main{
+            background-color: #12b97d;
+        }
+    </style>
+
+</head>
+<body>
+<div id="top">
+<h2>привет!{{uname}}.</h2>
+    <h2>{{time|safe}}</h2>
+<br>
+<a href="/session_out/"><h3>выйти</h3></a>
+
+<div id="main">
+<hr>
+
+<ul>
+{% for tes in test %}
+    <a href="{% url 'testing_detail' tes.pk %}">
+<h3>{{tes.title}}</h3>
+    </a><button type="button" class="btn btn-primary" data-toggle="collapse"
+		data-target= #{{tes.pk}}>просмотр
+</button>
+<div>
+<!--style="width:160px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;"-->
+    <div id={{tes.pk}} class="collapse" >
+	<!--{% if tes.comment != None %}-->
+        <!--{{tes.comment}}-->
+        <!--{% endif %}-->
+        {% for st in stem %}
+            {% if st.testing == tes.id %}
+                {{st.content|safe}}
+            {% endif %}
+        {% endfor %}
+</div>
+
+</div>
+
+{% empty %}
+пока нет теста.
+{% endfor %}
+</ul>
+</div>
+    </div>
+</body>
+<script type="text/javascript">
+</script>
+</html>

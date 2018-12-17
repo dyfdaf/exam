@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+       <style type="text/css">
+        *{
+           padding: 0;
+             margin: 0;
+         }
+         .text-hide{
+             width: 300px;
+             font-size: 16px;
+             color: #666;
+             border: 1px solid #ccc;
+             line-height: 24px;
+         }
+         .check-more{
+             margin-left: 5px;
+             font-size: 14px;
+             color: red;
+             cursor: pointer;
+         }
+         .click-show{
+             width: 300px;
+             border: 1px solid #ccc;
+             font-size: 16px;
+             color: #666;
+             line-height: 24px;
+         }
+         #top{
+            background-color: #96b97d;
+        }
+         #main{
+            background-color: #12b97d;
+        }
+    </style>
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script>
+$(function(){
+  var ps = document.querySelectorAll('.text-hide');
+  var divs = document.querySelectorAll('.click-show'); // 预定的字符串
+  var saveNum = 10;
+  for(var ins = 0; ins < ps.length; ins++){
+      ps[ins].index = ins;
+      var inner = ps[ins].innerHTML;
+      var str = inner.split('');
+      for(var i = 0; i < str.length; i++){
+      if(str[i] == ' '){
+      str.splice(i,1); }
+      }
+      var newStr = str.join('');
+      var len = newStr.length;
+      if(len >= saveNum){
+      divs[ins].innerHTML = newStr.slice(0,saveNum) + "<span class='check-more'>show more>></span>";
+      ps[ins].style.display = 'none';
+       }
+       if(document.querySelector('.check-more')){
+           var spans = document.querySelectorAll('.check-more');
+           for(var j = 0; j < spans.length; j++){
+               spans[j].index = j;
+               spans[j].onclick=function(){
+                   divs[this.index].style.display = 'none';
+                   ps[this.index].style.display = 'block'; }
+               } } }
+});
+</script>
+</head>
+<body>
+<div id="top">
+<h2>привет!{{uname}}.</h2>
+<br>
+<a href="/session_out/"><h3>выйти</h3></a>
+</div>
+<div id="main">
+<hr>
+<br>
+
+<ul>
+{% for tes in test %}
+    <a href="{% url 'testing_detail' tes.pk %}">
+<h3>{{tes.title}}</h3>
+    </a>
+<div>
+    <p class="text-hide">
+     {% if tes.comment != None %}
+        {{tes.comment}}
+        {% endif %}
+    </p>
+    <div class="click-show"></div>
+</div>
+{% empty %}
+пока нет теста.
+{% endfor %}
+</ul>
+</div>
+</body>
+</html>

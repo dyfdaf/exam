@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <title>用户登录</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <!--<script src="js/bootstrap.min.js"></script>-->
+    <link rel="stylesheet" type="text/css" />
+    <!--<script src="../js/jquery-1.9.1.min.js" type="text/javascript"></script>-->
+    <style>
+        <!--body-->
+        <!--{-->
+            <!--background:url(/home/dyfdaf/projects/django2/final_exam/static/img/1.img) #f8f6e9;-->
+        <!--}-->
+        #from
+        {
+            background-color: #96b97d;
+        }
+        .mycenter
+        {
+            margin-top: 100px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            width: 500px;
+            padding: 5%;
+            padding-left: 5%;
+            padding-right: 5%;
+        }
+        .mycenter mysign
+        {
+            width: 440px;
+        }
+        .mycenter input, checkbox, button
+        {
+            margin-top: 2%;
+            margin-left: 10%;
+            margin-right: 10%;
+        }
+        .mycheckbox
+        {
+            margin-top: 10px;
+            margin-left: 40px;
+            margin-bottom: 10px;
+            height: 10px;
+        }
+    </style>
+</head>
+<script type="text/javascript">
+    var u =[];
+    var i = 0;
+    for(let stu of {{list|safe}}){
+        u[i] = stu;
+        i += 1
+        }
+
+    function myEvent(){
+      var a = document.getElementById("user").value;
+      for (var q=0;q<u.length;q++){
+          if (u[q] == a){
+               return true;
+          }
+          }
+      document.getElementById("warning").innerText = "you're not the chosen one!";
+      return false;
+     }
+</script>
+<body>
+<div id="from">
+    <form method="post" action="index_handle/" onsubmit="return myEvent();">
+    <div class="mycenter">
+        <div class="mysign">
+            <div class="col-lg-11 text-center text-info">
+                <h2>Система тестирования</h2>
+            </div>
+            <div class="col-lg-10">
+                <input type="text" name="uname" id="user"  placeholder="Ф.И.О." required autofocus />
+                <p id="warning"></p>
+            </div>
+            <div class="col-lg-10">
+                {% csrf_token %}
+                <input type="submit" name="login" value="войти">
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+</body>
+</html>

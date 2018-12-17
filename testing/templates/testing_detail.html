@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{testing.title|safe}}</title>
+           <style type="text/css">
+         body{
+            background-color: #96b97d;
+        }
+         #main{
+            background-color: #72b95d;
+        }
+    </style>
+    <style type="text/css">
+    h1{
+        text-align:center
+    }
+    </style>
+    {% load staticfiles %}
+<script type="text/javascript" src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script type="text/javascript">
+
+    </script>
+
+    {% load staticfiles %}
+    <script src="{% static 'js/csrf.js' %}"></script>
+    <!--<script src="{% static 'js/test1.js' %}"></script>-->
+
+</head>
+
+<body>
+<div id="top">
+    <h1 id="timer"></h1>
+    <h1 id="warring"></h1>
+<h2>Удачи!{{uname}}</h2>
+<a href="/session_out/"><h3>выйти</h3></a>
+<a href="{% url 'testing_list' %}"><h3>вернутся к перечени теста</h3></a>
+</div>
+<div id="main">
+<hr>
+    {% for st in stem %}
+        {{st.content|safe}}
+        <br>
+        <h3>ответ:</h3>
+        {% if st.is_choicequestion %}
+            {% for i in option %}
+                {% if i.stem == st.id %}
+                    {{i.content|safe}}<input type="radio" name={{i.stem}} value={{i.content|safe}} id={{st.number}}>
+        <br>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for j in fillin %}
+                {% if j.stem == st.id %}
+                    {{j.content|safe}} <input type="text" id={{st.number}}>
+                    <br>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        <hr>
+    {% endfor %}
+</div>
+
+<input type="button" id="btn" value="отправить">
+
+</body>
+<script type="text/javascript">
+      var maxtime = {{time|safe}};          //一个小时，按秒计算
+      var status = {{status|safe}};
+      function CountDown() {
+          if (status == 0) {
+              minutes = Math.floor(maxtime / 60);
+             seconds = Math.floor(maxtime % 60);
+             msg = "до закончания теста ешё " + minutes + " мин. " + seconds + " сек.";
+             document.all["timer"].innerHTML = msg;
+             if (maxtime == 5 * 60)alert("остается только 5 мин.");
+               if (maxtime > 0)  --maxtime;
+               if (maxtime == 0) { clearInterval(timer); alert("тест уже закончился.");  }
+         } else if(status == 1){
+             clearInterval(timer);
+             alert("тест уже закончился.");
+         }else if(status == 2){
+            minutes = Math.floor(maxtime / 60);
+             seconds = Math.floor(maxtime % 60);
+             msg = "до начала теста еще " + minutes + " мин. " + seconds + " сек.";
+             document.all["timer"].innerHTML = msg;
+             if (maxtime > 0)
+                {--maxtime;}
+         }
+         else if(status == 3){
+            clearInterval(timer);
+             alert("тест уже закончится или ещё не начинал.");
+         }
+         }
+
+    timer = setInterval("CountDown()", 1000);
+
+
+//#######################   update ###########################################
+   $('#btn').click(function(event){
+   if (maxtime != 0){
+   var src = window.location.href;
+   arr = src.split("/");
+   var test = arr[arr.length-1];
+
+   var maxStem = 0;
+
+    var answer = new Array();
+    var p = 0;
+    var j = 0;
+
+    var types = new Array();
+
+   $(":text").each(function(){
+       answer[$(this).attr('id')] += $(this).val()+'|';
+       p += 1;
+
+       if ($(this).attr('id') > maxStem){
+            maxStem = $(this).attr('id');
+       }
+   })
+
+   $(":checked").each(function(){
+        answer[$(this).attr('id')] = $(this).val();
+
+        if ($(this).attr('id') > maxStem){
+            maxStem = $(this).attr('id');
+       }
+   })
+
+       var types = new Array(maxStem);
+      $(":checked").each(function(){
+
+        types[$(this).attr('id')-1] = 1;
+   })
+   answer.shift();
+
+   // TYPES中元素=1代表是选择题，否则为填空题
+      for (var i=0;i<maxStem;i++){
+        if (types[i] != 1){
+            types[i] = 2;
+            answer[i] = answer[i].substring(9,answer[i].length-1);
+        }
+
+      }
+
+     if (status == 0){
+      $.ajax({
+         url: '/testing/score_submit/',
+         type: 'post',
+         contentType : "application/json;charset=utf-8",
+         data: JSON.stringify({answers:answer, type:types ,testing:test})
+
+      })
+      .done(function()
+      {
+         alert("Ответы отправлены успешно.");
+      })
+      .fail(function(){
+         alert("Жизнь даётся человеку только один раз.");
+      })
+      }
+   else {
+     alert("тест уже закончится или ещё не начинал.");
+   }
+   }
+   else {alert("тест уже закончится или ещё не начинал.")};
+   }
+   )
+
+</script>
+
+</html>
