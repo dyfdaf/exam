@@ -174,7 +174,7 @@ def score_submit(request):
         for i in range(len(getAnswer)):
             getans = getAnswer[i].split('|')
             st_score = stem_score['list'][i]['fields']['score']
-            if len(getans) == 1:     #如果这一题的答案只有一个，则直接和正确答案集对比
+            if len(getans) == 1:  # 如果这一题的答案只有一个，则直接和正确答案集对比
                 qwe = getans[0].split(' ')
                 c = ''
                 for q in qwe:
@@ -182,14 +182,33 @@ def score_submit(request):
                         c += str(q) + ' '
                 getans[0] = c[:-1]
                 if getans[0] == correct_answer[str(i)]:
-                    score += st_score      #分数待定
-            else:                    #如果一题有多个小题，则先把正确答案集拆分，再分别比较
+                    score += st_score  # 分数待定
+            else:  # 如果一题有多个小题，则先把正确答案集拆分，再分别比较
                 corans = correct_answer[str(i)].split('|')
-                corans = corans[:-1]
-                sp_score = st_score / len(getans)
-                for j in range(len(getans)):
-                    if getans[j] == corans[j]:
-                        score += sp_score
+                if len(corans) != 1:
+                    corans = corans[:-1]
+                sp_score = st_score / len(corans)
+                if len(getans) == len(corans):
+                    for j in range(len(corans)):
+                        if getans[j] == corans[j]:
+                            score += sp_score
+                            #                        score = 80
+                else:
+                    for j in range(len(corans)):
+                        if j == 0:
+                            getans[j] = getans[j][9:]
+                        if getans[j] == corans[j]:
+                            score += sp_score
+
+        stu_answer = ''
+        for ans in getAnswer:
+            qwe = ans.split(' ')
+            c = ''
+            for q in qwe:
+                if q != '':
+                    c += str(q) + ' '
+            ans = c[:-1]
+            stu_answer += ans + '\n'
 
         stu_answer = ''
         for ans in getAnswer:
